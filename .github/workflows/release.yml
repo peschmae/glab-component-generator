@@ -1,0 +1,28 @@
+on:
+  release:
+    types: [created]
+
+permissions:
+    contents: write
+    packages: write
+
+jobs:
+  release-linux-amd64:
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - linux
+          - darwin
+        arch:
+          - amd64
+          - arm64
+    name: release all binaries (cross compiling)
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - uses: wangyoucao577/go-release-action@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        goos: ${{ matrix.os }}
+        goarch: ${{ matrix.arch }}
