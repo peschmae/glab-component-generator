@@ -50,20 +50,40 @@ func generateReadme() error {
 		return nil
 	})
 
-	output := "# GitLab CI Components\n\nThis repository contains the following components:\n\n[[_TOC_]]\n\n"
+	var sb strings.Builder
+	if _, err := os.Stat(filepath.Join(viper.GetString("project"), "HEADER.md")); err == nil {
+		header, err := os.ReadFile(filepath.Join(viper.GetString("project"), "HEADER.md"))
+		if err != nil {
+			return err
+		}
+		sb.WriteString(string(header))
+	} else {
+		sb.WriteString("# GitLab CI Components\n\nThis repository contains the following components:\n\n[[_TOC_]]")
+	}
 
+	sb.WriteString("\n\n")
 	// for each yaml file, parse and render the markdown
-	for _, component := range components {
-		c, err := gitlab.NewComponent(component)
+	for i := 0; i < len(components); i++ {
+		c, err := gitlab.NewComponent(components[i])
 		if err != nil {
 			return err
 		}
 		// render markdown
-		output += c.Markdown()
+		sb.WriteString(c.Markdown())
 	}
 
+	if _, err := os.Stat(filepath.Join(viper.GetString("project"), "FOOTER.md")); err == nil {
+		footer, err := os.ReadFile(filepath.Join(viper.GetString("project"), "FOOTER.md"))
+		if err != nil {
+			return err
+		}
+		sb.WriteString(string(footer))
+	}
+
+	sb.WriteString("\n")
+
 	// write to file
-	err := os.WriteFile(filepath.Join(viper.GetString("project"), viper.GetString("output")), []byte(strings.TrimSpace(output)), 0644)
+	err := os.WriteFile(filepath.Join(viper.GetString("project"), viper.GetString("output")), []byte(strings.TrimSpace(sb.String())), 0644)
 	if err != nil {
 		return err
 	}

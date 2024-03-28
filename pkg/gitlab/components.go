@@ -13,7 +13,6 @@ import (
 
 var readmeTemplate = `## {{ .Name }}
 {{ .Readme }}
-
 {{ if .HasOptions }}
 | Input / Variable | Description                            | Default value     | Options     |
 | --------------------- | -------------------------------------- | ----------------- | ----------------- |
@@ -27,7 +26,6 @@ var readmeTemplate = `## {{ .Name }}
 	{{ $value.MarkdownWithoutOptions $key }}
 {{ end }}
 {{ end }}
-
 `
 
 type ComponentInput struct {
@@ -41,7 +39,7 @@ func (c ComponentInput) Markdown(name string) string {
 }
 
 func (c ComponentInput) MarkdownWithoutOptions(name string) string {
-	return fmt.Sprintf("| `%s` | %s | _%s_ | ", name, c.Description, c.Default)
+	return fmt.Sprintf("| `%s` | %s | _%s_ |", name, c.Description, c.Default)
 }
 
 type ComponentSpec struct {
