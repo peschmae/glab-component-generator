@@ -12,7 +12,6 @@ import (
 	"github.com/peschmae/glab-component-generator/pkg/gitlab"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"gopkg.in/yaml.v3"
 )
 
 // generateCmd represents the generate command
@@ -55,14 +54,10 @@ func generateReadme() error {
 
 	// for each yaml file, parse and render the markdown
 	for _, component := range components {
-		// parse yaml
-		c := &gitlab.Component{Name: filepath.Base(filepath.Dir(component))}
-
-		b, err := os.ReadFile(component)
+		c, err := gitlab.NewComponent(component)
 		if err != nil {
 			return err
 		}
-		yaml.Unmarshal(b, c)
 		// render markdown
 		output += c.Markdown()
 	}

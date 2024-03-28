@@ -5,11 +5,16 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Package",
+            "name": "Generate ci-components",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "${fileDirname}"
+            "program": "${workspaceRoot}",
+            "args": [
+                "generate",
+                "-p=${userHome}/wms/ci-components",
+                "-o", "debug.md"
+            ]
         }
     ]
 }
