@@ -46,20 +46,20 @@ Will result in the following markdown
 ```markdown
 | Input / Variable | Description | Default value | Type    | Options | Regex |
 | ---------------- | ----------- | ------------- | ------- | ------- | ----- |
+| `concurrency`    |             | _1_           | number  | __ | `` |
+| `environment`    |             | __            |         | _test, staging, production_ | `` |
+| `export_results` |             | _true_        | boolean | __ | `` |
 | `job-prefix`     | Define a prefix for the job name | __            |         | __ | `` |
 | `job-stage`      |             | _test_        |         | __ | `` |
-| `environment`    |             | __            |         | _test, staging, production_ | `` |
-| `concurrency`    |             | _1_           | number  | __ | `` |
 | `version`        |             | __            | string  | __ | `/^v\d\.\d+(\.\d+)$/` |
-| `export_results` |             | _true_        | boolean | __ | `` |
 ```
 
 ### Generated table
 | Input / Variable | Description | Default value | Type    | Options | Regex |
 | ---------------- | ----------- | ------------- | ------- | ------- | ----- |
+| `concurrency`    |             | _1_           | number  | __ | `` |
+| `environment`    |             | __            |         | _test, staging, production_ | `` |
+| `export_results` |             | _true_        | boolean | __ | `` |
 | `job-prefix`     | Define a prefix for the job name | __            |         | __ | `` |
 | `job-stage`      |             | _test_        |         | __ | `` |
-| `environment`    |             | __            |         | _test, staging, production_ | `` |
-| `concurrency`    |             | _1_           | number  | __ | `` |
 | `version`        |             | __            | string  | __ | `/^v\d\.\d+(\.\d+)$/` |
-| `export_results` |             | _true_        | boolean | __ | `` |
