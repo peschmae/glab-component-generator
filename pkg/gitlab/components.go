@@ -1,3 +1,6 @@
+/*
+Copyright © 2024 Mathias Petermann <mathias.petermann@gmail.com>
+*/
 package gitlab
 
 import (
@@ -8,24 +11,26 @@ import (
 	"strings"
 	"text/template"
 
+	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
 
 var readmeTemplate = `## {{ .Name }}
-{{ .Readme }}
+{{ .Header }}
 {{ if .HasOptions }}
-| Input / Variable | Description                            | Default value     | Options     |
-| --------------------- | -------------------------------------- | ----------------- | ----------------- |
+| Input / Variable | Description | Default value | Options |
+| ---------------- | ----------- | ------------- | ------- |
 {{ range $key, $value := .Spec.Inputs -}}
 	{{ $value.Markdown $key }}
 {{ end }}
 {{ else }}
-| Input / Variable | Description                            | Default value     |
-| --------------------- | -------------------------------------- | ----------------- |
+| Input / Variable | Description | Default value |
+| ---------------- | ----------- | ------------- |
 {{ range $key, $value := .Spec.Inputs -}}
 	{{ $value.MarkdownWithoutOptions $key }}
 {{ end }}
 {{ end }}
+{{ .Footer }}
 `
 
 type ComponentInput struct {
@@ -48,7 +53,8 @@ type ComponentSpec struct {
 
 type Component struct {
 	Name   string
-	Readme string
+	Header string
+	Footer string
 	Spec   ComponentSpec `yaml:"spec"`
 }
 
@@ -76,14 +82,22 @@ func (c *Component) HasOptions() bool {
 
 func NewComponent(path string) (*Component, error) {
 	var name string
-	var readme []byte
+	var header []byte
+	var footer []byte
 	// GitLab allows yaml files directly in template directory, there we need to get the name from the filename
 	// Otherwise the name is the parent directory name
 	if filepath.Base(path) == "template.yml" || filepath.Base(path) == "template.yaml" {
 		name = filepath.Base(filepath.Dir(path))
 
-		if _, err := os.Stat(filepath.Join(filepath.Dir(path), "README.md")); err == nil {
-			readme, err = os.ReadFile(filepath.Join(filepath.Dir(path), "README.md"))
+		if _, err := os.Stat(filepath.Join(filepath.Dir(path), viper.GetString("component-header"))); err == nil {
+			header, err = os.ReadFile(filepath.Join(filepath.Dir(path), viper.GetString("component-header")))
+			if err != nil {
+				return nil, err
+			}
+		}
+
+		if _, err := os.Stat(filepath.Join(filepath.Dir(path), viper.GetString("component-footer"))); err == nil {
+			footer, err = os.ReadFile(filepath.Join(filepath.Dir(path), viper.GetString("component-footer")))
 			if err != nil {
 				return nil, err
 			}
@@ -92,7 +106,7 @@ func NewComponent(path string) (*Component, error) {
 		name = strings.TrimSuffix(filepath.Base(path), filepath.Ext(path))
 	}
 
-	c := &Component{Name: name, Readme: string(readme)}
+	c := &Component{Name: name, Header: string(header), Footer: string(footer)}
 
 	b, err := os.ReadFile(path)
 	if err != nil {

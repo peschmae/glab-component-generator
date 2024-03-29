@@ -1,5 +1,5 @@
 /*
-Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+Copyright © 2024 Mathias Petermann <mathias.petermann@gmail.com>
 */
 package cmd
 
@@ -14,27 +14,44 @@ import (
 	"github.com/spf13/viper"
 )
 
-// generateCmd represents the generate command
-var generateCmd = &cobra.Command{
-	Use:   "generate",
-	Short: "Generates a README.md for the specified GitLab component project",
-	PreRunE: func(cmd *cobra.Command, args []string) error {
-		return validateFlags()
-	},
-	RunE: func(cmd *cobra.Command, args []string) error {
-		return generateReadme()
-	},
-}
+func NewGenerateCommand() *cobra.Command {
+	cmd := &cobra.Command{
+		Use:     "readme",
+		Aliases: []string{"r"},
+		Short:   "Generates a README.md for all components within the given project directory",
+		Long: `Gathers all components in <project>/templates and generates a README.md
+from them using the inputs spec.
 
-func init() {
-	rootCmd.AddCommand(generateCmd)
+The generated README is prepended by a HEADER and FOOTER file, if present.
+The same goes for each component.`,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			return validateFlags()
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return generateReadme()
+		},
+	}
 
-	generateCmd.Flags().StringP("project", "p", ".", "The path to the gitlab CI component project")
-	generateCmd.Flags().StringP("output", "o", "README.md", "The path to the output file")
+	cmd.Flags().StringP("project", "p", ".", "The path to the gitlab CI component project")
+	cmd.Flags().StringP("output", "o", "README.md", "The path to the output file")
+
+	cmd.Flags().String("header", "HEADER.md", "File to prepended to the list of components")
+	cmd.Flags().String("footer", "FOOTER.md", "File to appended to the list of components")
+
+	cmd.Flags().String("component-header", "HEADER.md", "File to prepended on component. The file must exist in the component directory")
+	cmd.Flags().String("component-footer", "FOOTER.md", "File to appended on component. The file must exist in the component directory")
 
 	// bind flags to viper
-	viper.BindPFlag("project", generateCmd.Flags().Lookup("project"))
-	viper.BindPFlag("output", generateCmd.Flags().Lookup("output"))
+	viper.BindPFlag("project", cmd.Flags().Lookup("project"))
+	viper.BindPFlag("output", cmd.Flags().Lookup("output"))
+
+	viper.BindPFlag("header", cmd.Flags().Lookup("header"))
+	viper.BindPFlag("footer", cmd.Flags().Lookup("footer"))
+
+	viper.BindPFlag("component-header", cmd.Flags().Lookup("component-header"))
+	viper.BindPFlag("component-footer", cmd.Flags().Lookup("component-footer"))
+
+	return cmd
 }
 
 func generateReadme() error {
@@ -51,8 +68,8 @@ func generateReadme() error {
 	})
 
 	var sb strings.Builder
-	if _, err := os.Stat(filepath.Join(viper.GetString("project"), "HEADER.md")); err == nil {
-		header, err := os.ReadFile(filepath.Join(viper.GetString("project"), "HEADER.md"))
+	if _, err := os.Stat(filepath.Join(viper.GetString("project"), viper.GetString("header"))); err == nil {
+		header, err := os.ReadFile(filepath.Join(viper.GetString("project"), viper.GetString("header")))
 		if err != nil {
 			return err
 		}
@@ -72,8 +89,8 @@ func generateReadme() error {
 		sb.WriteString(c.Markdown())
 	}
 
-	if _, err := os.Stat(filepath.Join(viper.GetString("project"), "FOOTER.md")); err == nil {
-		footer, err := os.ReadFile(filepath.Join(viper.GetString("project"), "FOOTER.md"))
+	if _, err := os.Stat(filepath.Join(viper.GetString("project"), viper.GetString("footer"))); err == nil {
+		footer, err := os.ReadFile(filepath.Join(viper.GetString("project"), viper.GetString("footer")))
 		if err != nil {
 			return err
 		}
