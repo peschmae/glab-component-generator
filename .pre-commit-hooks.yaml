@@ -1,0 +1,12 @@
+-   id: glab-component-readme-generator
+    name: Generate README.md for GitLab components
+    description: Generates a README.md for each GitLab component in the given directory
+    entry: glab-component-generator generate
+    language: golang
+    # run on changes to yaml/yml or markdown files, eg just a change to an included readme should also trigger this
+    types_or: [yaml, markdown]
+    files: "^(HEADER.md|FOOTER.md|templates/)"
+    # only run once
+    require_serial: true
+    pass_filenames: false
+
