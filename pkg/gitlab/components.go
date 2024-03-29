@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 	"text/template"
 
@@ -17,19 +18,9 @@ import (
 
 var readmeTemplate = `## {{ .Name }}
 {{ .Header }}
-{{ if .HasOptions }}
-| Input / Variable | Description | Default value | Options |
-| ---------------- | ----------- | ------------- | ------- |
-{{ range $key, $value := .Spec.Inputs -}}
-	{{ $value.Markdown $key }}
-{{ end }}
-{{ else }}
-| Input / Variable | Description | Default value |
-| ---------------- | ----------- | ------------- |
-{{ range $key, $value := .Spec.Inputs -}}
-	{{ $value.MarkdownWithoutOptions $key }}
-{{ end }}
-{{ end }}
+
+{{ .Spec.MarkdownTable }}
+
 {{ .Footer }}
 `
 
@@ -37,18 +28,107 @@ type ComponentInput struct {
 	Default     string   `yaml:"default"`
 	Description string   `yaml:"description"`
 	Options     []string `yaml:"options"`
+	Type        string   `yaml:"type"`
+	Regex       string   `yaml:"regex"`
 }
 
-func (c ComponentInput) Markdown(name string) string {
-	return fmt.Sprintf("| `%s` | %s | _%s_ | _%s_ |", name, c.Description, c.Default, strings.Join(c.Options, ", "))
-}
+func (input ComponentInput) Markdown(name string, hasTypes, hasOptions, hasRegex bool) string {
+	var sb strings.Builder
+	sb.WriteString(fmt.Sprintf("| %-16s | %-11s | %-13s |", fmt.Sprintf("`%s`", name), input.Description, fmt.Sprintf("_%s_", input.Default)))
 
-func (c ComponentInput) MarkdownWithoutOptions(name string) string {
-	return fmt.Sprintf("| `%s` | %s | _%s_ |", name, c.Description, c.Default)
+	if hasTypes {
+		sb.WriteString(fmt.Sprintf(" %-7s |", input.Type))
+	}
+	if hasOptions {
+		sb.WriteString(fmt.Sprintf(" _%s_ |", strings.Join(input.Options, ", ")))
+	}
+	if hasRegex {
+		sb.WriteString(fmt.Sprintf(" `%s` |", input.Regex))
+	}
+	sb.WriteString("\n")
+
+	return sb.String()
+
 }
 
 type ComponentSpec struct {
 	Inputs map[string]ComponentInput `yaml:"inputs"`
+}
+
+func (spec *ComponentSpec) MarkdownTable() string {
+	hasTypes := spec.HasTypes()
+	hasOptions := spec.HasOptions()
+	hasRegex := spec.HasRegex()
+
+	var sb strings.Builder
+	var dv strings.Builder
+
+	// Generate header
+	sb.WriteString("| Input / Variable | Description | Default value |")
+	dv.WriteString("| ---------------- | ----------- | ------------- |")
+	if hasTypes {
+		sb.WriteString(" Type    |")
+		dv.WriteString(" ------- |")
+	}
+	if hasOptions {
+		sb.WriteString(" Options |")
+		dv.WriteString(" ------- |")
+	}
+	if hasRegex {
+		sb.WriteString(" Regex |")
+		dv.WriteString(" ----- |")
+	}
+	sb.WriteString("\n")
+	// Write divider
+	sb.WriteString(dv.String())
+	sb.WriteString("\n")
+
+	keys := make([]string, len(spec.Inputs))
+
+	i := 0
+	for k := range spec.Inputs {
+		keys[i] = k
+		i++
+	}
+
+	sort.Strings(keys)
+
+	for i = 0; i < len(keys); i++ {
+		sb.WriteString(spec.Inputs[keys[i]].Markdown(keys[i], hasTypes, hasOptions, hasRegex))
+	}
+
+	return sb.String()
+
+}
+
+func (spec *ComponentSpec) HasOptions() bool {
+
+	for _, input := range spec.Inputs {
+		if len(input.Options) > 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func (spec *ComponentSpec) HasTypes() bool {
+
+	for _, input := range spec.Inputs {
+		if input.Type != "" {
+			return true
+		}
+	}
+	return false
+}
+
+func (spec *ComponentSpec) HasRegex() bool {
+
+	for _, input := range spec.Inputs {
+		if input.Regex != "" {
+			return true
+		}
+	}
+	return false
 }
 
 type Component struct {
@@ -68,16 +148,6 @@ func (c *Component) Markdown() string {
 		fmt.Printf("failed to render template: %v", err)
 	}
 	return tpl.String()
-}
-
-func (c *Component) HasOptions() bool {
-
-	for _, input := range c.Spec.Inputs {
-		if len(input.Options) > 0 {
-			return true
-		}
-	}
-	return false
 }
 
 func NewComponent(path string) (*Component, error) {

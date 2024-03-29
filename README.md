@@ -14,6 +14,8 @@ The following fields on each input are supported
 - `description`
 - `default`
 - `options`
+- `type`
+- `regex`
 
 ## Example
 
@@ -42,22 +44,22 @@ spec:
 Will result in the following markdown
 
 ```markdown
-| Input / Variable | Description | Default value | Options |
-| ---------------- | ----------- | ------------- | ------- |
-| `concurrency` |  | _1_ | __ |
-| `environment` |  | __ | _test, staging, production_ |
-| `export_results` |  | _true_ | __ |
-| `job-prefix` | Define a prefix for the job name | __ | __ |
-| `job-stage` |  | _test_ | __ |
-| `version` |  | __ | __ |
+| Input / Variable | Description | Default value | Type    | Options | Regex |
+| ---------------- | ----------- | ------------- | ------- | ------- | ----- |
+| `job-prefix`     | Define a prefix for the job name | __            |         | __ | `` |
+| `job-stage`      |             | _test_        |         | __ | `` |
+| `environment`    |             | __            |         | _test, staging, production_ | `` |
+| `concurrency`    |             | _1_           | number  | __ | `` |
+| `version`        |             | __            | string  | __ | `/^v\d\.\d+(\.\d+)$/` |
+| `export_results` |             | _true_        | boolean | __ | `` |
 ```
 
 ### Generated table
-| Input / Variable | Description | Default value | Options |
-| ---------------- | ----------- | ------------- | ------- |
-| `concurrency` |  | _1_ | __ |
-| `environment` |  | __ | _test, staging, production_ |
-| `export_results` |  | _true_ | __ |
-| `job-prefix` | Define a prefix for the job name | __ | __ |
-| `job-stage` |  | _test_ | __ |
-| `version` |  | __ | __ |
+| Input / Variable | Description | Default value | Type    | Options | Regex |
+| ---------------- | ----------- | ------------- | ------- | ------- | ----- |
+| `job-prefix`     | Define a prefix for the job name | __            |         | __ | `` |
+| `job-stage`      |             | _test_        |         | __ | `` |
+| `environment`    |             | __            |         | _test, staging, production_ | `` |
+| `concurrency`    |             | _1_           | number  | __ | `` |
+| `version`        |             | __            | string  | __ | `/^v\d\.\d+(\.\d+)$/` |
+| `export_results` |             | _true_        | boolean | __ | `` |
