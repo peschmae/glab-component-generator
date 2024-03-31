@@ -63,3 +63,18 @@ Will result in the following markdown
 | `job-prefix`     | Define a prefix for the job name | __            |         | __ | `` |
 | `job-stage`      |             | _test_        |         | __ | `` |
 | `version`        |             | __            | string  | __ | `/^v\d\.\d+(\.\d+)$/` |
+
+## .pre-commit hook
+The generator can also be used as a `.pre-commit-hook` to verify that the `README.md` was 
+updated on each commit.
+
+```yaml
+repos:
+  - repo: https://github.com/peschmae/glab-component-generator
+    rev: 0.6.0
+    hooks:
+      - id: glab-component-readme
+        args:
+          - --header=docs/HEADER.md
+          - --footer=docs/FOOTER.md
+```
