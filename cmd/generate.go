@@ -33,7 +33,7 @@ The same goes for each component.`,
 	}
 
 	cmd.Flags().StringP("project", "p", ".", "The path to the gitlab CI component project")
-	cmd.Flags().StringP("output", "o", "README.md", "The path to the output file")
+	cmd.Flags().StringP("output", "o", "README.md", "The path to the output file. Relative to the projet directory")
 
 	cmd.Flags().String("header", "HEADER.md", "File to prepended to the list of components")
 	cmd.Flags().String("footer", "FOOTER.md", "File to appended to the list of components")
@@ -56,12 +56,17 @@ The same goes for each component.`,
 
 func generateReadme() error {
 	components := []string{}
+	templatePath := filepath.Join(viper.GetString("project"), "templates")
 	// find all yaml files in project
-	filepath.Walk(filepath.Join(viper.GetString("project"), "templates"), func(path string, info os.FileInfo, err error) error {
+	filepath.Walk(templatePath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if filepath.Ext(path) == ".yaml" || filepath.Ext(path) == ".yml" {
+		// within the templates directory, we take all the yaml/yml files
+		if filepath.Dir(path) == templatePath && (filepath.Ext(path) == ".yaml" || filepath.Ext(path) == ".yml") {
+			components = append(components, path)
+		} else if filepath.Dir(path) != templatePath && (filepath.Base(path) == "template.yaml" || filepath.Base(path) == "template.yml") {
+			// if we are in a subdirectory, only the template.yaml/yml files are relevant
 			components = append(components, path)
 		}
 		return nil
