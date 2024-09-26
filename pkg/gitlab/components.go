@@ -17,10 +17,11 @@ import (
 )
 
 var readmeTemplate = `## {{ .Name }}
+
 {{ .Header }}
-
+{{ if .Spec }}
 {{ .Spec.MarkdownTable }}
-
+{{ end }}
 {{ .Footer }}
 `
 
@@ -34,7 +35,7 @@ type ComponentInput struct {
 
 // replace linebreaks with <br> as Gitlab converts it to HTML anyways
 func replaceLinebreaks(input string) string {
-	return strings.ReplaceAll(input, "\n", "<br>")
+	return strings.TrimSuffix(strings.ReplaceAll(input, "\n", "<br>"), "<br>")
 }
 
 func (input ComponentInput) Markdown(name string, hasTypes, hasOptions, hasRegex bool) string {
@@ -140,10 +141,14 @@ type Component struct {
 	Name   string
 	Header string
 	Footer string
-	Spec   ComponentSpec `yaml:"spec"`
+	Spec   *ComponentSpec `yaml:"spec"`
 }
 
 func (c *Component) Markdown() string {
+
+	if c.Header == "" && c.Footer == "" && c.Spec == nil {
+		return ""
+	}
 
 	// render go template
 	t := template.Must(template.New("readme").Parse(readmeTemplate))

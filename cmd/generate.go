@@ -105,7 +105,7 @@ func generateReadme() error {
 	sb.WriteString("\n")
 
 	// write to file
-	err := os.WriteFile(filepath.Join(viper.GetString("project"), viper.GetString("output")), []byte(strings.TrimSpace(sb.String())), 0644)
+	err := os.WriteFile(filepath.Join(viper.GetString("project"), viper.GetString("output")), []byte(strings.TrimSpace(sb.String())+"\n"), 0644)
 	if err != nil {
 		return err
 	}

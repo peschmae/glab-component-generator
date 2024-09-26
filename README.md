@@ -2,7 +2,7 @@
 
 Very small CLI based on `spf13/cobra` to generate `README.md` from existing GitLab components.
 
-The genreated `README.md` can be expanded using a header and footer file. By default those are 
+The genreated `README.md` can be expanded using a header and footer file. By default those are
 `HEADER.md` and `FOOTER.md` in the project directory.
 
 The same goes for each component, if the component is in it's own directory within `templates/`.
@@ -25,7 +25,9 @@ The following `spec` in a component
 spec:
   inputs:
     job-prefix:     # Mandatory string input
-      description: "Define a prefix for the job name"
+      description: |
+        Define a prefix for the job name.
+        Now with line break support
     job-stage:      # Optional string input with a default value when not provided
       default: test
     environment:    # Mandatory input that must match one of the options
@@ -49,7 +51,7 @@ Will result in the following markdown
 | `concurrency`    |             | _1_           | number  | __ | `` |
 | `environment`    |             | __            |         | _test, staging, production_ | `` |
 | `export_results` |             | _true_        | boolean | __ | `` |
-| `job-prefix`     | Define a prefix for the job name | __            |         | __ | `` |
+| `job-prefix`     | Define a prefix for the job name.<br>Now with line break support | __            |         | __ | `` |
 | `job-stage`      |             | _test_        |         | __ | `` |
 | `version`        |             | __            | string  | __ | `/^v\d\.\d+(\.\d+)$/` |
 ```
@@ -60,18 +62,18 @@ Will result in the following markdown
 | `concurrency`    |             | _1_           | number  | __ | `` |
 | `environment`    |             | __            |         | _test, staging, production_ | `` |
 | `export_results` |             | _true_        | boolean | __ | `` |
-| `job-prefix`     | Define a prefix for the job name | __            |         | __ | `` |
+| `job-prefix`     | Define a prefix for the job name<br>Now with line break support | __            |         | __ | `` |
 | `job-stage`      |             | _test_        |         | __ | `` |
 | `version`        |             | __            | string  | __ | `/^v\d\.\d+(\.\d+)$/` |
 
 ## .pre-commit hook
-The generator can also be used as a `.pre-commit-hook` to verify that the `README.md` was 
+The generator can also be used as a `.pre-commit-hook` to verify that the `README.md` was
 updated on each commit.
 
 ```yaml
 repos:
   - repo: https://github.com/peschmae/glab-component-generator
-    rev: 0.6.0
+    rev: 0.7.0
     hooks:
       - id: glab-component-readme
         args:

@@ -200,6 +200,7 @@ spec:
 		expected.WriteString(`## Component test
 
 
+
 | Input / Variable | Description | Default value |
 | ---------------- | ----------- | ------------- |
 `)
@@ -218,6 +219,7 @@ spec:
 
 		var expected strings.Builder
 		expected.WriteString(`## Header test
+
 Some Header
 
 | Input / Variable | Description | Default value |
@@ -238,6 +240,7 @@ Some Header
 
 		var expected strings.Builder
 		expected.WriteString(`## Footer test
+
 
 
 | Input / Variable | Description | Default value |

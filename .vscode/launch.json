@@ -12,8 +12,21 @@
             "program": "${workspaceRoot}",
             "args": [
                 "readme",
-                "-p=/Users/tabpema9/wms/ci-components",
+                "-p=/Users/peschmae/work/ci-components/",
                 "-o", "debug.md"
+            ]
+        },
+        {
+            "name": "Skip no-inputs",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceRoot}",
+            "args": [
+                "readme",
+                "-p=/Users/peschmae/work/ci-components/",
+                "-o", "debug.md",
+                "--skip-no-inputs"
             ]
         }
     ]
