@@ -32,9 +32,14 @@ type ComponentInput struct {
 	Regex       string   `yaml:"regex"`
 }
 
+// replace linebreaks with <br> as Gitlab converts it to HTML anyways
+func replaceLinebreaks(input string) string {
+	return strings.ReplaceAll(input, "\n", "<br>")
+}
+
 func (input ComponentInput) Markdown(name string, hasTypes, hasOptions, hasRegex bool) string {
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("| %-16s | %-11s | %-13s |", fmt.Sprintf("`%s`", name), input.Description, fmt.Sprintf("_%s_", input.Default)))
+	sb.WriteString(fmt.Sprintf("| %-16s | %-11s | %-13s |", fmt.Sprintf("`%s`", name), replaceLinebreaks(input.Description), fmt.Sprintf("_%s_", input.Default)))
 
 	if hasTypes {
 		sb.WriteString(fmt.Sprintf(" %-7s |", input.Type))

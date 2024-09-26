@@ -10,7 +10,7 @@ import (
 )
 
 func Test_ComponentSpecMarkdown(t *testing.T) {
-	t.Run("Markdown with all fields", func(t *testing.T) {
+	t.Run("All fields", func(t *testing.T) {
 		input := `
 inputs:
   job-prefix:     # Mandatory string input
@@ -46,7 +46,7 @@ inputs:
 
 	})
 
-	t.Run("Markdown without options", func(t *testing.T) {
+	t.Run("Without options", func(t *testing.T) {
 		input := `
 inputs:
   job-prefix:     # Mandatory string input
@@ -79,7 +79,7 @@ inputs:
 
 	})
 
-	t.Run("Markdown without regex", func(t *testing.T) {
+	t.Run("Without regex", func(t *testing.T) {
 		input := `
 inputs:
   job-prefix:     # Mandatory string input
@@ -111,7 +111,7 @@ inputs:
 
 	})
 
-	t.Run("Markdown without type", func(t *testing.T) {
+	t.Run("Without type", func(t *testing.T) {
 		input := `
 inputs:
   job-prefix:     # Mandatory string input
@@ -138,7 +138,7 @@ inputs:
 
 	})
 
-	t.Run("Markdown minimal", func(t *testing.T) {
+	t.Run("Minimal", func(t *testing.T) {
 		input := `
 inputs:
   job-prefix:     # Mandatory string input
@@ -157,6 +157,27 @@ inputs:
 		expected.WriteString("| `export_results` |             | _true_        |\n")
 		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |\n")
 		expected.WriteString("| `job-stage`      |             | _test_        |\n")
+
+		spec := &ComponentSpec{}
+		yaml.Unmarshal([]byte(input), spec)
+
+		assert.Equal(t, expected.String(), spec.MarkdownTable())
+
+	})
+
+	t.Run("Description linebreak", func(t *testing.T) {
+		input := `
+inputs:
+  export_results: # Optional boolean input with a default value when not provided
+    default: true
+    description: |
+      Line 1
+      Line 2`
+		var expected strings.Builder
+		expected.WriteString(`| Input / Variable | Description | Default value |
+| ---------------- | ----------- | ------------- |
+`)
+		expected.WriteString("| `export_results` | Line 1<br>Line 2 | _true_        |\n")
 
 		spec := &ComponentSpec{}
 		yaml.Unmarshal([]byte(input), spec)
