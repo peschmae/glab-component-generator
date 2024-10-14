@@ -33,7 +33,12 @@ func replaceLinebreaks(input string) string {
 
 func (input ComponentInput) Markdown(name string, hasTypes, hasOptions, hasRegex bool) string {
 	var sb strings.Builder
-	sb.WriteString(fmt.Sprintf("| %-16s | %-11s | %-13s |", fmt.Sprintf("`%s`", name), replaceLinebreaks(input.Description), fmt.Sprintf("_%s_", input.Default)))
+	if input.Default == "" {
+		input.Default = fmt.Sprintf("%c", '\U000026D4')
+	} else {
+		input.Default = fmt.Sprintf("_%s_", input.Default)
+	}
+	sb.WriteString(fmt.Sprintf("| %-16s | %-11s | %-13s |", fmt.Sprintf("`%s`", name), replaceLinebreaks(input.Description), input.Default))
 
 	if hasTypes {
 		sb.WriteString(fmt.Sprintf(" %-7s |", input.Type))

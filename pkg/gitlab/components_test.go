@@ -1,6 +1,7 @@
 package gitlab
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 
@@ -34,11 +35,11 @@ inputs:
 | ---------------- | ----------- | ------------- | ------- | ------- | ----- |
 `)
 		expected.WriteString("| `concurrency`    |             | _1_           | number  | __ | `` |\n")
-		expected.WriteString("| `environment`    |             | __            |         | _test, staging, production_ | `` |\n")
+		expected.WriteString(fmt.Sprintf("| `environment`    |             | %c             |         | _test, staging, production_ | `` |\n", '\U000026D4'))
 		expected.WriteString("| `export_results` |             | _true_        | boolean | __ | `` |\n")
-		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |         | __ | `` |\n")
+		expected.WriteString(fmt.Sprintf("| `job-prefix`     | Define a prefix for the job name | %c             |         | __ | `` |\n", '\U000026D4'))
 		expected.WriteString("| `job-stage`      |             | _test_        |         | __ | `` |\n")
-		expected.WriteString("| `version`        |             | __            | string  | __ | `/^v\\d\\.\\d+(\\.\\d+)$/` |\n")
+		expected.WriteString(fmt.Sprintf("| `version`        |             | %c             | string  | __ | `/^v\\d\\.\\d+(\\.\\d+)$/` |\n", '\U000026D4'))
 
 		spec := &ComponentSpec{}
 		yaml.Unmarshal([]byte(input), spec)
@@ -69,9 +70,9 @@ inputs:
 `)
 		expected.WriteString("| `concurrency`    |             | _1_           | number  | `` |\n")
 		expected.WriteString("| `export_results` |             | _true_        | boolean | `` |\n")
-		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |         | `` |\n")
+		expected.WriteString(fmt.Sprintf("| `job-prefix`     | Define a prefix for the job name | %c             |         | `` |\n", '\U000026D4'))
 		expected.WriteString("| `job-stage`      |             | _test_        |         | `` |\n")
-		expected.WriteString("| `version`        |             | __            | string  | `/^v\\d\\.\\d+(\\.\\d+)$/` |\n")
+		expected.WriteString(fmt.Sprintf("| `version`        |             | %c             | string  | `/^v\\d\\.\\d+(\\.\\d+)$/` |\n", '\U000026D4'))
 
 		spec := &ComponentSpec{}
 		yaml.Unmarshal([]byte(input), spec)
@@ -100,9 +101,9 @@ inputs:
 | ---------------- | ----------- | ------------- | ------- | ------- |
 `)
 		expected.WriteString("| `concurrency`    |             | _1_           | number  | __ |\n")
-		expected.WriteString("| `environment`    |             | __            |         | _test, staging, production_ |\n")
+		expected.WriteString(fmt.Sprintf("| `environment`    |             | %c             |         | _test, staging, production_ |\n", '\U000026D4'))
 		expected.WriteString("| `export_results` |             | _true_        | boolean | __ |\n")
-		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |         | __ |\n")
+		expected.WriteString(fmt.Sprintf("| `job-prefix`     | Define a prefix for the job name | %c             |         | __ |\n", '\U000026D4'))
 		expected.WriteString("| `job-stage`      |             | _test_        |         | __ |\n")
 
 		spec := &ComponentSpec{}
@@ -127,10 +128,10 @@ inputs:
 		expected.WriteString(`| Input / Variable | Description | Default value | Options | Regex |
 | ---------------- | ----------- | ------------- | ------- | ----- |
 `)
-		expected.WriteString("| `environment`    |             | __            | _test, staging, production_ | `` |\n")
-		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            | __ | `` |\n")
+		expected.WriteString(fmt.Sprintf("| `environment`    |             | %c             | _test, staging, production_ | `` |\n", '\U000026D4'))
+		expected.WriteString(fmt.Sprintf("| `job-prefix`     | Define a prefix for the job name | %c             | __ | `` |\n", '\U000026D4'))
 		expected.WriteString("| `job-stage`      |             | _test_        | __ | `` |\n")
-		expected.WriteString("| `version`        |             | __            | __ | `/^v\\d\\.\\d+(\\.\\d+)$/` |\n")
+		expected.WriteString(fmt.Sprintf("| `version`        |             | %c             | __ | `/^v\\d\\.\\d+(\\.\\d+)$/` |\n", '\U000026D4'))
 
 		spec := &ComponentSpec{}
 		yaml.Unmarshal([]byte(input), spec)
@@ -156,7 +157,7 @@ inputs:
 `)
 		expected.WriteString("| `concurrency`    |             | _1_           |\n")
 		expected.WriteString("| `export_results` |             | _true_        |\n")
-		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |\n")
+		expected.WriteString(fmt.Sprintf("| `job-prefix`     | Define a prefix for the job name | %c             |\n", '\U000026D4'))
 		expected.WriteString("| `job-stage`      |             | _test_        |\n")
 
 		spec := &ComponentSpec{}
@@ -205,7 +206,7 @@ spec:
 | Input / Variable | Description | Default value |
 | ---------------- | ----------- | ------------- |
 `)
-		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |\n")
+		expected.WriteString(fmt.Sprintf("| `job-prefix`     | Define a prefix for the job name | %c             |\n", '\U000026D4'))
 
 		expected.WriteString("\n")
 
@@ -226,7 +227,7 @@ Some Header
 | Input / Variable | Description | Default value |
 | ---------------- | ----------- | ------------- |
 `)
-		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |\n")
+		expected.WriteString(fmt.Sprintf("| `job-prefix`     | Define a prefix for the job name | %c             |\n", '\U000026D4'))
 
 		expected.WriteString("\n")
 
@@ -248,7 +249,7 @@ Header
 | Input / Variable | Description | Default value |
 | ---------------- | ----------- | ------------- |
 `)
-		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |\n")
+		expected.WriteString(fmt.Sprintf("| `job-prefix`     | Define a prefix for the job name | %c             |\n", '\U000026D4'))
 
 		expected.WriteString("\n")
 
@@ -267,7 +268,7 @@ Header
 | Input / Variable | Description | Default value |
 | ---------------- | ----------- | ------------- |
 `)
-		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |\n")
+		expected.WriteString(fmt.Sprintf("| `job-prefix`     | Define a prefix for the job name | %c             |\n", '\U000026D4'))
 
 		expected.WriteString("\nSome Footer\n")
 
@@ -288,7 +289,7 @@ Header
 | Input / Variable | Description | Default value |
 | ---------------- | ----------- | ------------- |
 `)
-		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |\n")
+		expected.WriteString(fmt.Sprintf("| `job-prefix`     | Define a prefix for the job name | %c             |\n", '\U000026D4'))
 
 		expected.WriteString("\n")
 
