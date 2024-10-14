@@ -4,26 +4,15 @@ Copyright © 2024 Mathias Petermann <mathias.petermann@gmail.com>
 package gitlab
 
 import (
-	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
 	"strings"
-	"text/template"
 
 	"github.com/spf13/viper"
 	"gopkg.in/yaml.v3"
 )
-
-var readmeTemplate = `## {{ .Name }}
-
-{{ .Header }}
-{{ if .Spec }}
-{{ .Spec.MarkdownTable }}
-{{ end }}
-{{ .Footer }}
-`
 
 type ComponentInput struct {
 	Default     string   `yaml:"default"`
@@ -31,6 +20,10 @@ type ComponentInput struct {
 	Options     []string `yaml:"options"`
 	Type        string   `yaml:"type"`
 	Regex       string   `yaml:"regex"`
+}
+
+func headerLevel() string {
+	return strings.Repeat("#", viper.GetInt("component-header-level"))
 }
 
 // replace linebreaks with <br> as Gitlab converts it to HTML anyways
@@ -67,26 +60,26 @@ func (spec *ComponentSpec) MarkdownTable() string {
 	hasRegex := spec.HasRegex()
 
 	var sb strings.Builder
-	var dv strings.Builder
+	var divider strings.Builder
 
 	// Generate header
 	sb.WriteString("| Input / Variable | Description | Default value |")
-	dv.WriteString("| ---------------- | ----------- | ------------- |")
+	divider.WriteString("| ---------------- | ----------- | ------------- |")
 	if hasTypes {
 		sb.WriteString(" Type    |")
-		dv.WriteString(" ------- |")
+		divider.WriteString(" ------- |")
 	}
 	if hasOptions {
 		sb.WriteString(" Options |")
-		dv.WriteString(" ------- |")
+		divider.WriteString(" ------- |")
 	}
 	if hasRegex {
 		sb.WriteString(" Regex |")
-		dv.WriteString(" ----- |")
+		divider.WriteString(" ----- |")
 	}
 	sb.WriteString("\n")
 	// Write divider
-	sb.WriteString(dv.String())
+	sb.WriteString(divider.String())
 	sb.WriteString("\n")
 
 	keys := make([]string, len(spec.Inputs))
@@ -150,14 +143,24 @@ func (c *Component) Markdown() string {
 		return ""
 	}
 
-	// render go template
-	t := template.Must(template.New("readme").Parse(readmeTemplate))
-	var tpl bytes.Buffer
-	err := t.Execute(&tpl, c)
-	if err != nil {
-		fmt.Printf("failed to render template: %v", err)
+	var md strings.Builder
+
+	// render component header
+	md.WriteString(fmt.Sprintf("%s %s\n\n", headerLevel(), c.Name))
+
+	if c.Header != "" {
+		md.WriteString(strings.TrimSpace(c.Header) + "\n\n")
 	}
-	return tpl.String()
+
+	if c.Spec != nil {
+		md.WriteString(c.Spec.MarkdownTable() + "\n")
+	}
+
+	if c.Footer != "" {
+		md.WriteString(strings.TrimSpace(c.Footer) + "\n")
+	}
+
+	return md.String()
 }
 
 func NewComponent(path string) (*Component, error) {

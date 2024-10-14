@@ -41,6 +41,8 @@ The same goes for each component.`,
 	cmd.Flags().String("component-header", "HEADER.md", "File to prepended on component. The file must exist in the component directory")
 	cmd.Flags().String("component-footer", "FOOTER.md", "File to appended on component. The file must exist in the component directory")
 
+	cmd.Flags().Int("component-header-level", 2, "The level of the header for each component")
+
 	// bind flags to viper
 	viper.BindPFlag("project", cmd.Flags().Lookup("project"))
 	viper.BindPFlag("output", cmd.Flags().Lookup("output"))
@@ -50,6 +52,8 @@ The same goes for each component.`,
 
 	viper.BindPFlag("component-header", cmd.Flags().Lookup("component-header"))
 	viper.BindPFlag("component-footer", cmd.Flags().Lookup("component-footer"))
+
+	viper.BindPFlag("component-header-level", cmd.Flags().Lookup("component-header-level"))
 
 	return cmd
 }
@@ -80,10 +84,10 @@ func generateReadme() error {
 		}
 		sb.WriteString(string(header))
 	} else {
-		sb.WriteString("# GitLab CI Components\n\nThis repository contains the following components:\n\n[[_TOC_]]")
+		sb.WriteString("# GitLab CI Components\n\nThis repository contains the following components:\n\n[[_TOC_]]\n")
 	}
 
-	sb.WriteString("\n\n")
+	sb.WriteString("\n")
 	// for each yaml file, parse and render the markdown
 	for i := 0; i < len(components); i++ {
 		c, err := gitlab.NewComponent(components[i])
