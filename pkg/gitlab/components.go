@@ -16,14 +16,12 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-var readmeTemplate = `## {{ .Name }}
+var readmeTemplate = `{{ headerLevel }} {{ .Name }}
 
-{{ .Header }}
-{{ if .Spec }}
-{{ .Spec.MarkdownTable }}
-{{ end }}
-{{ .Footer }}
-`
+{{ trim .Header }}
+
+{{ if .Spec }}{{ .Spec.MarkdownTable }}{{ end }}
+{{ .Footer }}`
 
 type ComponentInput struct {
 	Default     string   `yaml:"default"`
@@ -31,6 +29,10 @@ type ComponentInput struct {
 	Options     []string `yaml:"options"`
 	Type        string   `yaml:"type"`
 	Regex       string   `yaml:"regex"`
+}
+
+func headerLevel() string {
+	return strings.Repeat("#", viper.GetInt("component-header-level"))
 }
 
 // replace linebreaks with <br> as Gitlab converts it to HTML anyways
@@ -151,12 +153,13 @@ func (c *Component) Markdown() string {
 	}
 
 	// render go template
-	t := template.Must(template.New("readme").Parse(readmeTemplate))
+	t := template.Must(template.New("readme").Funcs(template.FuncMap{"trim": strings.TrimSpace, "headerLevel": headerLevel}).Parse(readmeTemplate))
 	var tpl bytes.Buffer
 	err := t.Execute(&tpl, c)
 	if err != nil {
 		fmt.Printf("failed to render template: %v", err)
 	}
+	// add newline to end of file
 	return tpl.String()
 }
 

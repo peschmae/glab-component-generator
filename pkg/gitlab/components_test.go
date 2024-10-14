@@ -6,6 +6,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -188,6 +189,8 @@ inputs:
 }
 
 func Test_ComponentMarkdown(t *testing.T) {
+	viper.Set("component-header-level", 2)
+
 	input := `
 spec:
   inputs:
@@ -206,7 +209,7 @@ spec:
 `)
 		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |\n")
 
-		expected.WriteString("\n\n\n")
+		expected.WriteString("\n\n")
 
 		component := &Component{Name: "Component test"}
 		yaml.Unmarshal([]byte(input), component)
@@ -227,9 +230,31 @@ Some Header
 `)
 		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |\n")
 
-		expected.WriteString("\n\n\n")
+		expected.WriteString("\n\n")
 
 		component := &Component{Name: "Header test", Header: "Some Header"}
+		yaml.Unmarshal([]byte(input), component)
+
+		assert.Equal(t, expected.String(), component.Markdown())
+
+	})
+
+	t.Run("Header with linebreak", func(t *testing.T) {
+
+		var expected strings.Builder
+		expected.WriteString(`## Header test
+
+Some
+Header
+
+| Input / Variable | Description | Default value |
+| ---------------- | ----------- | ------------- |
+`)
+		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |\n")
+
+		expected.WriteString("\n\n")
+
+		component := &Component{Name: "Header test", Header: "Some\nHeader\n"}
 		yaml.Unmarshal([]byte(input), component)
 
 		assert.Equal(t, expected.String(), component.Markdown())
@@ -241,14 +266,12 @@ Some Header
 		var expected strings.Builder
 		expected.WriteString(`## Footer test
 
-
-
 | Input / Variable | Description | Default value |
 | ---------------- | ----------- | ------------- |
 `)
 		expected.WriteString("| `job-prefix`     | Define a prefix for the job name | __            |\n")
 
-		expected.WriteString("\n\nSome Footer\n")
+		expected.WriteString("\nSome Footer")
 
 		component := &Component{Name: "Footer test", Footer: "Some Footer"}
 		yaml.Unmarshal([]byte(input), component)
