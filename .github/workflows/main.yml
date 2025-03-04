@@ -28,7 +28,7 @@ jobs:
       - name: Setup Go environment
         uses: actions/setup-go@v5
         with:
-          go-version: 1.22
+          go-version: 1.24
 
       # Runs a set of commands using the runners shell
       - name: Build
